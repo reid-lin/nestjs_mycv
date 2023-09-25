@@ -1,4 +1,3 @@
-// import Session decorator
 import {
   Body,
   Controller,
@@ -26,30 +25,32 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
-  // add new route to check current user
   @Get('/whoami')
   whoAmI(@Session() session: any) {
     return this.usersService.findOne(session.userId);
   }
 
   @Post('/signup')
-  // add session decorator
   async createUser(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signup(body.email, body.password);
-    // add user.id to session
     session.userId = user.id;
 
     return user;
   }
 
   @Post('/signin')
-  // add session decorator
   async signin(@Body() body: CreateUserDto, @Session() session: any) {
     const user = await this.authService.signin(body.email, body.password);
-    // add user.id to session
     session.userId = user.id;
 
     return user;
+  }
+
+  // add signout route
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    // clear user id in session
+    session.userId = null;
   }
 
   @Get('/:id')
