@@ -1,3 +1,4 @@
+// import Session decorator
 import {
   Body,
   Controller,
@@ -8,6 +9,7 @@ import {
   Param,
   Query,
   NotFoundException,
+  Session,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -25,16 +27,21 @@ export class UsersController {
   ) {}
 
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    const user = this.authService.signup(body.email, body.password);
+  // add session decorator
+  async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signup(body.email, body.password);
+    // add user.id to session
+    session.userId = user.id;
 
     return user;
   }
 
   @Post('/signin')
-  // CreateUserDto maybe not suitable, but it can use here
-  signin(@Body() body: CreateUserDto) {
-    const user = this.authService.signin(body.email, body.password);
+  // add session decorator
+  async signin(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signin(body.email, body.password);
+    // add user.id to session
+    session.userId = user.id;
 
     return user;
   }
