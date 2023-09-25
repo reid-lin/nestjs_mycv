@@ -26,6 +26,12 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
+  // add new route to check current user
+  @Get('/whoami')
+  whoAmI(@Session() session: any) {
+    return this.usersService.findOne(session.userId);
+  }
+
   @Post('/signup')
   // add session decorator
   async createUser(@Body() body: CreateUserDto, @Session() session: any) {
