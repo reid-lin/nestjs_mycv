@@ -25,5 +25,21 @@ export class AuthService {
     return user;
   }
 
-  signin() {}
+  async signin(email: string, password: string) {
+    const [user] = await this.userService.find(email);
+
+    if (!user) {
+      throw new BadRequestException('user not found');
+    }
+
+    const [salt, storedHash] = user.password.split('.');
+    const hash = (await scrypt(password, salt, 32)) as Buffer;
+
+    // compare storedHash and hashed password
+    if (storedHash !== hash.toString('hex')) {
+      throw new BadRequestException('incorrect password');
+    }
+
+    return user;
+  }
 }
